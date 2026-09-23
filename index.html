@@ -2,109 +2,156 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>لعبة عبود</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
   body {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     background: linear-gradient(135deg, #1a1a2e, #16213e);
     font-family: 'Segoe UI', Tahoma, sans-serif;
     color: #eee;
-    padding: 15px;
+    padding: 8px;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+  .top-bar {
+    width: 100%;
+    text-align: center;
+    padding: 4px 0;
+  }
   h1 {
-    margin-bottom: 10px;
-    font-size: 24px;
+    font-size: 18px;
     background: linear-gradient(90deg, #00d4ff, #00ff88);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    margin-bottom: 4px;
   }
   .welcome {
-    font-size: 14px;
+    font-size: 12px;
     color: #00d4ff;
-    margin-bottom: 10px;
   }
   .info {
     display: flex;
-    gap: 30px;
-    margin-bottom: 12px;
-    font-size: 16px;
+    gap: 25px;
+    font-size: 14px;
+    justify-content: center;
+    margin: 4px 0;
   }
   .info span { color: #00ff88; font-weight: bold; }
+  .game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+  }
   canvas {
     background: #0f0f1e;
-    border-radius: 12px;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
     border: 2px solid #00d4ff;
-    max-width: 100%;
+    display: block;
+    max-width: 92vw;
+    max-height: 42vh;
+    width: auto;
     height: auto;
     touch-action: none;
   }
-  .controls {
-    margin-top: 15px;
-    display: flex;
-    gap: 12px;
+  .mobile-pad {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 200px;
+    height: 150px;
+    margin-top: 10px;
+    direction: ltr;
   }
-  button {
-    padding: 12px 25px;
-    font-size: 15px;
+  .mobile-pad button {
+    padding: 0;
+    font-size: 22px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #00d4ff, #00ff88);
+    color: #1a1a2e;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    touch-action: manipulation;
+    min-width: 0;
+    min-height: 0;
+  }
+  .mobile-pad button:active {
+    transform: scale(0.92);
+    filter: brightness(1.2);
+  }
+  .mobile-pad .empty { visibility: hidden; }
+  .controls {
+    margin-top: 8px;
+    padding-bottom: 6px;
+  }
+  .controls button {
+    padding: 10px 22px;
+    font-size: 14px;
     font-weight: bold;
     border: none;
     border-radius: 8px;
     background: linear-gradient(90deg, #00d4ff, #00ff88);
     color: #1a1a2e;
-    cursor: pointer;
     font-family: inherit;
+    cursor: pointer;
   }
-  button:active { transform: scale(0.95); }
-  .mobile-pad {
-    display: grid;
-    grid-template-columns: repeat(3, 65px);
-    gap: 10px;
-    margin-top: 15px;
-  }
-  .mobile-pad button {
-    padding: 0;
-    height: 65px;
-    font-size: 26px;
+  .controls button:active { transform: scale(0.95); }
+
+  @media (max-height: 700px) {
+    h1 { font-size: 15px; }
+    .welcome { display: none; }
+    canvas { max-height: 36vh; }
+    .mobile-pad { width: 180px; height: 130px; }
+    .mobile-pad button { font-size: 18px; }
   }
 </style>
 </head>
 <body>
 
-<h1>🐍 لعبة عبود</h1>
-<div class="welcome" id="welcome"></div>
-
-<div class="info">
-  <div>النقاط: <span id="score">0</span></div>
-  <div>الأعلى: <span id="best">0</span></div>
+<div class="top-bar">
+  <h1>🐍 لعبة عبود</h1>
+  <div class="welcome" id="welcome"></div>
+  <div class="info">
+    <div>النقاط: <span id="score">0</span></div>
+    <div>الأعلى: <span id="best">0</span></div>
+  </div>
 </div>
 
-<canvas id="game" width="400" height="400"></canvas>
+<div class="game-area">
+  <canvas id="game" width="400" height="400"></canvas>
+
+  <div class="mobile-pad">
+    <div class="empty"></div>
+    <button data-dir="up">▲</button>
+    <div class="empty"></div>
+    <button data-dir="left">◀</button>
+    <div class="empty"></div>
+    <button data-dir="right">▶</button>
+    <div class="empty"></div>
+    <button data-dir="down">▼</button>
+    <div class="empty"></div>
+  </div>
+</div>
 
 <div class="controls">
   <button id="restart">🔄 إعادة</button>
-</div>
-
-<div class="mobile-pad">
-  <div></div>
-  <button data-dir="up">▲</button>
-  <div></div>
-  <button data-dir="left">◀</button>
-  <div></div>
-  <button data-dir="right">▶</button>
-  <div></div>
-  <button data-dir="down">▼</button>
-  <div></div>
 </div>
 
 <script>
@@ -140,7 +187,7 @@ function init() {
   scoreEl.textContent = 0;
   placeFood();
   if (timer) clearInterval(timer);
-  timer = setInterval(update, 130);
+  timer = setInterval(update, 140);
   draw();
 }
 
